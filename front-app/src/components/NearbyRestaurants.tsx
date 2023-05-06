@@ -1,10 +1,15 @@
 import React, { useReducer, useEffect } from "react";
+interface Restaurant {
+    name: string;
+    distance: number;
+    rating: number ;
+  }
 
 interface State {
-  restaurants: string[];
+  restaurants: Restaurant[];
 }
 
-type Action = { type: "GET_RESTAURANTS"; payload: string[] };
+type Action = { type: "GET_RESTAURANTS"; payload: Restaurant[] };
 
 const initialState: State = {
   restaurants: [],
@@ -40,7 +45,21 @@ const NearbyRestaurants: React.FC = () => {
           };
 
           service.nearbySearch(request, (results) => {
-            const restaurants = results.slice(0, 10).map((result) => result.name);
+            const restaurants = results.slice(0, 10).map((result) => {
+                const distance = 
+                    result.geometry &&
+                    google.maps.geometry.spherical.computeDistanceBetween(
+                        new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                        result.geometry.location
+                        );
+                const rating = result.rating || 0;
+                return {
+                    name: result.name,
+                    distance: Math.round(distance || 0),
+                    rating: rating
+                }
+            });
+
             dispatch({ type: "GET_RESTAURANTS", payload: restaurants });
           });
         });
@@ -55,7 +74,7 @@ const NearbyRestaurants: React.FC = () => {
       <h1>10 Nearby Restaurants</h1>
       <ul>
         {state.restaurants.map((restaurant) => (
-          <li key={restaurant}>{restaurant}</li>
+          <li key={restaurant.name}>{restaurant.name} - {restaurant.distance} km away - {restaurant.rating}</li>
         ))}
       </ul>
     </div>
