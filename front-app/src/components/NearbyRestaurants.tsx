@@ -29,20 +29,18 @@ const NearbyRestaurants: React.FC = () => {
     const getNearbyRestaurants = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
 
           const service = new google.maps.places.PlacesService(
             document.createElement("div")
           );
           const request = {
-            location: new google.maps.LatLng(lat, lng),
+            location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
             type: "restaurant",
             rankBy: google.maps.places.RankBy.DISTANCE
           };
 
           service.nearbySearch(request, (results) => {
-            const restaurants = results.map((result) => result.name);
+            const restaurants = results.slice(0, 10).map((result) => result.name);
             dispatch({ type: "GET_RESTAURANTS", payload: restaurants });
           });
         });
