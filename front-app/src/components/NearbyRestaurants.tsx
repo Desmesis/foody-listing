@@ -1,5 +1,5 @@
-import React, { useReducer, useState } from "react";
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Container, Grid, Rating, Tooltip, Typography } from '@mui/material';
+import React, { useReducer } from "react";
+import { Box, Button, Card, CardContent, CardMedia, Grid, Rating, Tooltip, Typography } from '@mui/material';
 
 
 interface Restaurant {
@@ -33,7 +33,14 @@ function reducer(state: State, action: Action): State {
     }
 }
 
-function NearbyRestaurants() {
+// Define the variables that are called by the function : 
+interface NearbyRestaurantsProps {
+    cuisine: string;
+    price: number;
+    open: boolean;
+  }
+
+function NearbyRestaurants(props: NearbyRestaurantsProps) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const getNearbyRestaurants = () => {
@@ -46,7 +53,10 @@ function NearbyRestaurants() {
                 const request = {
                 location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
                 type: "restaurant",
-                rankBy: google.maps.places.RankBy.DISTANCE
+                keyword: props.cuisine,
+                rankBy: google.maps.places.RankBy.DISTANCE,
+                minPriceLevel: props.price,
+                openNow: props.open
                 };
 
                 service.nearbySearch(request, (results) => {
@@ -78,8 +88,6 @@ function NearbyRestaurants() {
             });
         }
     };
-
-    const[hoveredRating, setHoveredRating] = useState<number| null>(null);
 
     return (
         <div>
