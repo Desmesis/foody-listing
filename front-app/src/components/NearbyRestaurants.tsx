@@ -1,7 +1,9 @@
+// Component handling the calls made to the Google Places API
+
 import React, { useReducer } from "react";
 import { Box, Button, Card, CardContent, CardMedia, Grid, Rating, Tooltip, Typography } from '@mui/material';
 
-
+// Interface of the parameters we retrieve from the API
 interface Restaurant {
     name: string;
     distance: number;
@@ -13,6 +15,8 @@ interface State {
     restaurants: Restaurant[];
 }
 
+// The Action for the useReducer : we could add more, for example a loading and an error one
+// But for the sake of simplicity, I only added one.
 type Action = { 
     type: "GET_RESTAURANTS"; payload: Restaurant[] 
 };
@@ -21,6 +25,7 @@ const initialState: State = {
     restaurants: [],
 };
 
+// Reducer function
 function reducer(state: State, action: Action): State {
     switch (action.type) {
     case "GET_RESTAURANTS":
@@ -33,7 +38,8 @@ function reducer(state: State, action: Action): State {
     }
 }
 
-// Define the variables that are called by the function : 
+// Define the props that are called by the function : 
+// These are used for the filtering
 interface NearbyRestaurantsProps {
     cuisine: string;
     price: number;
@@ -47,9 +53,10 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
 
-                const service = new google.maps.places.PlacesService(
-                document.createElement("div")
-                );
+                const service = new google.maps.places.PlacesService(document.createElement("div"));
+
+                // Request gives the specification on the call to the API
+                // for more information : https://developers.google.com/maps/documentation/javascript/reference/places-service
                 const request = {
                 location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
                 type: "restaurant",
@@ -60,19 +67,27 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                 };
 
                 service.nearbySearch(request, (results) => {
-                    const restaurants = results.slice(0, 10).map((result) => {
 
+                    // Take only the 10 nearest:
+                    const restaurants = results.slice(0, 10).map((result) => {
+                        
+                        // Calculation from the distance : not exact, but close enough.
+                        // Adds a test to see if this information exists.
                         const distance = 
                             result.geometry &&
                             google.maps.geometry.spherical.computeDistanceBetween(
                                 new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
                                 result.geometry.location
                                 );
+                        
+                        // Same for photos
                         const photos = 
                             result.photos &&
                             result.photos.map((photo) => {
                                 return photo.getUrl({maxWidth: 400})
                             })
+
+                        // Same for rating
                         const rating = result.rating || 0;
                         return {
                             name: result.name,
@@ -131,7 +146,7 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                                     {restaurant.name}
                                 </Typography>
                                 <Typography>
-                                    Distance : {restaurant.distance} meters
+                                    Distance : {restaurant.distance} meters away
                                 </Typography>
                                 <Tooltip title={`Rating : ${restaurant.rating}`}>
                                     <Box display="inline-block">

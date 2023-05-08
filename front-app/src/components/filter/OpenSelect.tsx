@@ -1,3 +1,5 @@
+// Component for a Select Component that allows the filtering on OPEN or not : 
+
 import React, { useState } from 'react';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 
@@ -25,10 +27,10 @@ const OpenSelect: React.FC<Props> = ({ onChange }) => {
             onChange={handleOpenChange}
             autoWidth
             label="Opened Restaurant ? "
-        >
-            <MenuItem value={false as any}>False</MenuItem>
-            <MenuItem value={true as any}>True</MenuItem>
-        </Select>
+            >
+                <MenuItem value={false as any}>False</MenuItem>
+                <MenuItem value={true as any}>True</MenuItem>
+            </Select>
         </FormControl>
     );
 };
