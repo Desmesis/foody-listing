@@ -1,7 +1,8 @@
 # Foody Listing
 Single Page Application to get the 10 nearest restaurants around your location
 
-The informations displayed for the restaurants are : Address, Phone Number, Distance (in meters), Rating and a Link to Google maps.
+The informations displayed for the restaurants are : Address, Phone Number, Distance (in meters), Rating and even a Link to Google maps, if you want to know your trajectory ! 
+
 A "killer" feature would be a filtering feature that let's you choose a type of cuisine, the pricing or even if the restaurants are opened or not. Naturally, to add more filters is possible with an easy documentation :D
 
 ## Technologies :
