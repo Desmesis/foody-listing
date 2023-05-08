@@ -3,18 +3,17 @@
 import React, { useState } from 'react';
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 
-
 type Props = {
     onChange: (selectPrice: number) => void;
 };
 
-const PriceSelect: React.FC<Props> = ({ onChange }) => {
+function PriceSelect(props: Props) {
     const [selectedPrice, setSelectedPrice] = useState<number>(0);
 
     const handlePriceChange = (event: SelectChangeEvent<unknown>) => {
         const price = event.target.value as number;
         setSelectedPrice(price);
-        onChange(price);
+        props.onChange(price);
     };
 
     return (

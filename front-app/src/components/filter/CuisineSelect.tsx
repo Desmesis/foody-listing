@@ -9,13 +9,13 @@ type Props = {
     onChange: (selectedCuisine: string) => void;
 };
 
-const CuisineSelect: React.FC<Props> = ({ onChange }) => {
+function CuisineSelect(props: Props) {
     const [selectedCuisine, setSelectedCuisine] = useState<string>("");
 
     const handleCuisineChange = (event: SelectChangeEvent<unknown>) => {
         const cuisine = event.target.value as string;
         setSelectedCuisine(cuisine);
-        onChange(cuisine);
+        props.onChange(cuisine);
     };
 
     return (

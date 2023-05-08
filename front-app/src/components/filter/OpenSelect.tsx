@@ -8,13 +8,13 @@ type Props = {
     onChange: (selectOpen: boolean) => void;
 };
 
-const OpenSelect: React.FC<Props> = ({ onChange }) => {
+function OpenSelect(props: Props) {
     const [selectedOpen, setSelectedOpen] = useState<boolean>(false);
 
     const handleOpenChange = (event: SelectChangeEvent<unknown>) => {
         const open = event.target.value as boolean;
         setSelectedOpen(open);
-        onChange(open);
+        props.onChange(open);
     };
 
     return (

@@ -1,7 +1,6 @@
 // Component handling the calls made to the Google Places API
 
 import React, { useReducer } from "react";
-import { Link } from "react-router-dom";
 
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, Rating, Tooltip, Typography } from '@mui/material';
 
@@ -16,6 +15,7 @@ interface Restaurant {
     url: string;
 }
 
+// State for the useReducer hook
 interface State {
     restaurants: Restaurant[];
 }
@@ -51,6 +51,11 @@ interface NearbyRestaurantsProps {
     open: boolean;
 }
 
+// Type of the "details" object that we take from the getDetails() method.
+// It is naturally redundant with the Restaurant interface, as you need to modify both of them if you want
+// more informations about the restaurants.
+
+// But I didn't know how to fix it, as I'm still not that familiar with Typescript. 
 interface Details {
     url?: string;
     address?: string;
@@ -76,14 +81,18 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                     minPriceLevel: props.price,
                     openNow: props.open
                 };
-
+                
+                // Start the nearbysearch
                 service.nearbySearch(request, (results, status) => {
-
+                    
+                    // Check if the Google Places API is up
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
-
+                        
+                        // We take the 10 first ones (as the request is ranked by distance)
+                        // The promises is there to be sure we first get the details from the getDetails method
                         const detailsPromises = results.slice(0, 10).map((result) => {
                             return new Promise<Details>((resolve) => {
-                                result.place_id && service.getDetails({ placeId: result.place_id }, (placeResult: google.maps.places.PlaceResult, status) => {
+                                result.place_id && service.getDetails({ placeId: result.place_id }, (placeResult, status) => {
                                     if (status === google.maps.places.PlacesServiceStatus.OK) {
                                         resolve({
                                             phone_number: placeResult.formatted_phone_number,
@@ -99,7 +108,9 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                         
                         // Wait for all the promises to resolve
                         Promise.all(detailsPromises).then((details) => {
+
                             // Map the results to the final restaurants array
+                            // We still take the 10 first ones
                             const restaurants = results.slice(0, 10).map((result, index) => {
                                 
                                 // Calculation from the distance : not exact, but close enough.
