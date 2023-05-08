@@ -21,12 +21,12 @@ const OpenSelect: React.FC<Props> = ({ onChange }) => {
         <FormControl sx={{ m: 1, minWidth: 250 }}>
             <InputLabel>Opened Restaurant</InputLabel>
             <Select
-            labelId="open-label"
-            id="open-select"
-            value={selectedOpen}
-            onChange={handleOpenChange}
-            autoWidth
-            label="Opened Restaurant ? "
+                labelId="open-label"
+                id="open-select"
+                value={selectedOpen}
+                onChange={handleOpenChange}
+                autoWidth
+                label="Opened Restaurant ? "
             >
                 <MenuItem value={false as any}>False</MenuItem>
                 <MenuItem value={true as any}>True</MenuItem>
@@ -34,5 +34,5 @@ const OpenSelect: React.FC<Props> = ({ onChange }) => {
         </FormControl>
     );
 };
-  
+
 export default OpenSelect;

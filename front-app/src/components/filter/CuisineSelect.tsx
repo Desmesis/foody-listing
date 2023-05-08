@@ -22,12 +22,12 @@ const CuisineSelect: React.FC<Props> = ({ onChange }) => {
         <FormControl sx={{ m: 1, minWidth: 250 }}>
             <InputLabel>Select Cuisine Type</InputLabel>
             <Select
-            labelId="cuisine-label"
-            id="cuisine-select"
-            value={selectedCuisine}
-            onChange={handleCuisineChange}
-            label="Select Cuisine Type"
-            autoWidth
+                labelId="cuisine-label"
+                id="cuisine-select"
+                value={selectedCuisine}
+                onChange={handleCuisineChange}
+                label="Select Cuisine Type"
+                autoWidth
             >
                 <MenuItem value="">Any cuisine types</MenuItem>
                 <MenuItem value="italian">Italian</MenuItem>
@@ -39,5 +39,5 @@ const CuisineSelect: React.FC<Props> = ({ onChange }) => {
         </FormControl>
     );
 };
-  
+
 export default CuisineSelect;

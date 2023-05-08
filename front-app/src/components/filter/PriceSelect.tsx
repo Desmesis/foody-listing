@@ -21,12 +21,12 @@ const PriceSelect: React.FC<Props> = ({ onChange }) => {
         <FormControl sx={{ m: 1, minWidth: 250 }}>
             <InputLabel>Select minimum Price Level</InputLabel>
             <Select
-            labelId="price-label"
-            id="price-select"
-            value={selectedPrice}
-            onChange={handlePriceChange}
-            autoWidth
-            label="Select minimum Price Level"
+                labelId="price-label"
+                id="price-select"
+                value={selectedPrice}
+                onChange={handlePriceChange}
+                autoWidth
+                label="Select minimum Price Level"
             >
                 <MenuItem value={0}>Any price</MenuItem>
                 <MenuItem value={1}>1</MenuItem>
@@ -36,5 +36,5 @@ const PriceSelect: React.FC<Props> = ({ onChange }) => {
         </FormControl>
     );
 };
-  
+
 export default PriceSelect;

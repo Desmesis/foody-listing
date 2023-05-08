@@ -1,4 +1,4 @@
-# foody-listing
+# Foody Listing
 Single Page Application to get the 10 nearest restaurants around your location
 
 The informations displayed for the restaurants are : Distance and Rating.
@@ -14,6 +14,7 @@ All the commands have to be done in the app repository, namely : front-app
 You will have to do the following : 
 
 - download or clone the repository
+- `cd front-app`
 - `npm install` to install the dependencies
 - `npm start` to start the application on the default `localhost:3000`
 

@@ -7,7 +7,7 @@ import { Box, Button, Card, CardContent, CardMedia, Grid, Rating, Tooltip, Typog
 interface Restaurant {
     name: string;
     distance: number;
-    rating: number ;
+    rating: number;
     photos: string[];
 }
 
@@ -17,8 +17,8 @@ interface State {
 
 // The Action for the useReducer : we could add more, for example a loading and an error one
 // But for the sake of simplicity, I only added one.
-type Action = { 
-    type: "GET_RESTAURANTS"; payload: Restaurant[] 
+type Action = {
+    type: "GET_RESTAURANTS"; payload: Restaurant[]
 };
 
 const initialState: State = {
@@ -28,13 +28,13 @@ const initialState: State = {
 // Reducer function
 function reducer(state: State, action: Action): State {
     switch (action.type) {
-    case "GET_RESTAURANTS":
-        return {
-        ...state,
-        restaurants: action.payload,
-        };
-    default:
-        return state;
+        case "GET_RESTAURANTS":
+            return {
+                ...state,
+                restaurants: action.payload,
+            };
+        default:
+            return state;
     }
 }
 
@@ -44,7 +44,7 @@ interface NearbyRestaurantsProps {
     cuisine: string;
     price: number;
     open: boolean;
-  }
+}
 
 function NearbyRestaurants(props: NearbyRestaurantsProps) {
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -58,33 +58,33 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                 // Request gives the specification on the call to the API
                 // for more information : https://developers.google.com/maps/documentation/javascript/reference/places-service
                 const request = {
-                location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-                type: "restaurant",
-                keyword: props.cuisine,
-                rankBy: google.maps.places.RankBy.DISTANCE,
-                minPriceLevel: props.price,
-                openNow: props.open
+                    location: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                    type: "restaurant",
+                    keyword: props.cuisine,
+                    rankBy: google.maps.places.RankBy.DISTANCE,
+                    minPriceLevel: props.price,
+                    openNow: props.open
                 };
 
                 service.nearbySearch(request, (results) => {
 
                     // Take only the 10 nearest:
                     const restaurants = results.slice(0, 10).map((result) => {
-                        
+
                         // Calculation from the distance : not exact, but close enough.
                         // Adds a test to see if this information exists.
-                        const distance = 
+                        const distance =
                             result.geometry &&
                             google.maps.geometry.spherical.computeDistanceBetween(
                                 new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
                                 result.geometry.location
-                                );
-                        
+                            );
+
                         // Same for photos
-                        const photos = 
+                        const photos =
                             result.photos &&
                             result.photos.map((photo) => {
-                                return photo.getUrl({maxWidth: 400})
+                                return photo.getUrl({ maxWidth: 400 })
                             })
 
                         // Same for rating
@@ -98,7 +98,7 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                     });
 
                     dispatch({ type: "GET_RESTAURANTS", payload: restaurants });
-                    
+
                 });
             });
         }
@@ -107,41 +107,42 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
     return (
         <div>
             <Box
-            bgcolor= 'background.paper'
-            pt={8}
-            pb={6}
-            textAlign='center'
+                bgcolor='background.paper'
+                pt={8}
+                pb={6}
+                textAlign='center'
             >
-                <Button 
-                onClick={getNearbyRestaurants} 
-                variant="contained" 
-                disableElevation={true} 
-                color="info"
-                > 
-                    Give me the 10 nearest restaurants ! 
+                <Button
+                    onClick={getNearbyRestaurants}
+                    variant="contained"
+                    disableElevation={true}
+                    color="info"
+                >
+                    Give me the 10 nearest restaurants !
                 </Button>
             </Box>
             <Grid container spacing={2}>
                 {state.restaurants.map((restaurant) => (
                     <Grid item key={restaurant.name} xs={12} sm={6} md={3} lg={3}>
                         <Card
-                        raised
-                        sx={{
-                            height: '100%', 
-                            display: 'flex', 
-                            flexDirection: 'column' }}
+                            raised
+                            sx={{
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}
                         >
                             <CardMedia
-                            component="img"
-                            sx={{
-                                // 16:9
-                                pt: '10.25%',
-                                objectFit: 'contain'
+                                component="img"
+                                sx={{
+                                    // 16:9
+                                    pt: '10.25%',
+                                    objectFit: 'contain'
                                 }}
-                            image={restaurant.photos[0]}
-                            alt='Picture not found'
+                                image={restaurant.photos[0]}
+                                alt='Picture not found'
                             />
-                            <CardContent sx={{flexGrow: 1}}>
+                            <CardContent sx={{ flexGrow: 1 }}>
                                 <Typography gutterBottom variant="h5" component="h2">
                                     {restaurant.name}
                                 </Typography>

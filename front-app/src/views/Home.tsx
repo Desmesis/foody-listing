@@ -1,3 +1,6 @@
+// Main page of the application
+// Parent component of every other components.
+
 import React, { useState } from 'react';
 
 import NearbyRestaurants from '../components/NearbyRestaurants';
@@ -32,21 +35,21 @@ function Home() {
         <div>
             <Accordion>
                 <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
                 >
                     <Typography>
                         Filters
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <CuisineSelect onChange={handleCuisineChange}/>
-                    <PriceSelect onChange={handlePriceChange}/>
-                    <OpenSelect onChange={handleOpenChange}/>
+                    <CuisineSelect onChange={handleCuisineChange} />
+                    <PriceSelect onChange={handlePriceChange} />
+                    <OpenSelect onChange={handleOpenChange} />
                 </AccordionDetails>
             </Accordion>
-            <NearbyRestaurants cuisine={selectedCuisine} price={selectedPrice} open={selectedOpen}/>
+            <NearbyRestaurants cuisine={selectedCuisine} price={selectedPrice} open={selectedOpen} />
         </div>
     )
 }
