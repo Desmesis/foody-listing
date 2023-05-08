@@ -18,4 +18,6 @@ You will have to do the following :
 - `npm install` to install the dependencies
 - `npm start` to start the application on the default `localhost:3000`
 
+You need to enable the geolocation on your navigator, because that's how the site knows where you are !
+
 Have fun !

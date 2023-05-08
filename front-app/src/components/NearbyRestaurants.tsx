@@ -1,14 +1,19 @@
 // Component handling the calls made to the Google Places API
 
 import React, { useReducer } from "react";
-import { Box, Button, Card, CardContent, CardMedia, Grid, Rating, Tooltip, Typography } from '@mui/material';
+import { Link } from "react-router-dom";
+
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Grid, Rating, Tooltip, Typography } from '@mui/material';
 
 // Interface of the parameters we retrieve from the API
 interface Restaurant {
     name: string;
-    distance: number;
-    rating: number;
+    phone_number?: string;
+    address?: string;
+    distance?: number;
+    rating?: number;
     photos: string[];
+    url: string;
 }
 
 interface State {
@@ -46,6 +51,12 @@ interface NearbyRestaurantsProps {
     open: boolean;
 }
 
+interface Details {
+    url?: string;
+    address?: string;
+    phone_number?: string
+} 
+
 function NearbyRestaurants(props: NearbyRestaurantsProps) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -66,39 +77,56 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                     openNow: props.open
                 };
 
-                service.nearbySearch(request, (results) => {
+                service.nearbySearch(request, (results, status) => {
 
-                    // Take only the 10 nearest:
-                    const restaurants = results.slice(0, 10).map((result) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
 
-                        // Calculation from the distance : not exact, but close enough.
-                        // Adds a test to see if this information exists.
-                        const distance =
-                            result.geometry &&
-                            google.maps.geometry.spherical.computeDistanceBetween(
-                                new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
-                                result.geometry.location
-                            );
-
-                        // Same for photos
-                        const photos =
-                            result.photos &&
-                            result.photos.map((photo) => {
-                                return photo.getUrl({ maxWidth: 400 })
+                        const detailsPromises = results.slice(0, 10).map((result) => {
+                            return new Promise<Details>((resolve) => {
+                                result.place_id && service.getDetails({ placeId: result.place_id }, (placeResult: google.maps.places.PlaceResult, status) => {
+                                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                                        resolve({
+                                            phone_number: placeResult.formatted_phone_number,
+                                            url: placeResult.url,
+                                            address: placeResult.formatted_address
+                                        });
+                                    } else {
+                                        resolve({});
+                                    }
+                                })
                             })
-
-                        // Same for rating
-                        const rating = result.rating || 0;
-                        return {
-                            name: result.name,
-                            distance: Math.round(distance || 0),
-                            rating: rating,
-                            photos: photos || []
-                        }
-                    });
-
-                    dispatch({ type: "GET_RESTAURANTS", payload: restaurants });
-
+                        });
+                        
+                        // Wait for all the promises to resolve
+                        Promise.all(detailsPromises).then((details) => {
+                            // Map the results to the final restaurants array
+                            const restaurants = results.slice(0, 10).map((result, index) => {
+                                
+                                // Calculation from the distance : not exact, but close enough.
+                                // Adds a test to see if this information exists.                                
+                                const distance =
+                                result.geometry &&
+                                google.maps.geometry.spherical.computeDistanceBetween(
+                                    new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+                                    result.geometry.location
+                                );
+                                
+                                // We return all the properties we want to give it to "restaurants"
+                                return {
+                                    name: result.name,
+                                    address: details[index].address,
+                                    phone_number: details[index].phone_number,
+                                    distance: Math.round(distance || 0),
+                                    rating: result.rating,
+                                    photos: result.photos ? result.photos.map(photo => photo.getUrl({ maxWidth: 400 })) : [],
+                                    url: details[index].url || ""
+                                };
+                            });
+                            
+                            // Dispatch and give all the infos.
+                            dispatch({ type: "GET_RESTAURANTS", payload: restaurants });
+                        })
+                    }
                 });
             });
         }
@@ -147,6 +175,12 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                                     {restaurant.name}
                                 </Typography>
                                 <Typography>
+                                    Address : {restaurant.address}
+                                </Typography>
+                                <Typography>
+                                    Phone number : {restaurant.phone_number}
+                                </Typography>
+                                <Typography>
                                     Distance : {restaurant.distance} meters away
                                 </Typography>
                                 <Tooltip title={`Rating : ${restaurant.rating}`}>
@@ -155,6 +189,9 @@ function NearbyRestaurants(props: NearbyRestaurantsProps) {
                                     </Box>
                                 </Tooltip>
                             </CardContent>
+                            <CardActions>
+                                <Button size="medium" href={restaurant.url}>Show on Google Maps</Button>
+                            </CardActions>
                         </Card>
                     </Grid>
                 ))}
